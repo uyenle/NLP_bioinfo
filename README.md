@@ -1,5 +1,7 @@
-# NLP-unstructed-bioinfo
-ML learning not only specific relationships of drugs and protein targets but also wider clusters of global thematic relationships
+# Designing Drug-Target Relationship Discovery Software Using ML
+ML learning specific relationships of drugs and protein targets and wider clusters of global thematic relationships
+
+(Replication of the work done in Learning the Structure of Biomedical Relationships from Unstructured Text, a research paper by Percha and Altman, published in 2015 - https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004216)
 
 
 # Structure of process 
