@@ -14,3 +14,6 @@ Module 2:
 
 Module 3:
 - Vizualizing the global sematic relationships by Dendrogam 
+
+
+![Process of Methods](https://user-images.githubusercontent.com/16432968/135473128-6fb33510-bbb4-4308-8d3f-b7d6c158757d.png)
