@@ -9,6 +9,18 @@ library(ape)
 library(purrr)
 library(protoclust)
 ```
+S0: Download data from original paper database 
+```{r}
+options(timeout = max(400, getOption("timeout")))
+url1 = "https://zenodo.org/record/17215/files/cluster-assignments.tsv?download=1"
+url2 = "https://zenodo.org/record/17215/files/rows-same-cluster-30-125-new.tsv.zip?download=1"
+location = "/Volumes/PU PU/My Own Code/FINAL_github/Mo3_Dendrogram/cluster-assignments.tsv"
+
+download.file(url1,location)
+download.file(url2,location)
+```
+
+
 S1:Loading data and reshaping data 
 ```{r}
 data = fread('rows-same-cluster-30-125-new.tsv')
