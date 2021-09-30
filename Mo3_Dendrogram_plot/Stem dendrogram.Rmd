@@ -1,0 +1,87 @@
+---
+title: "Dendrogram"
+output: html_notebook
+---
+
+```{r, warning=F, message=F}
+library(data.table)
+library(ape)
+library(purrr)
+library(protoclust)
+```
+S0: Download data from original paper database 
+```{r}
+options(timeout = max(400, getOption("timeout")))
+url1 = "https://zenodo.org/record/17215/files/cluster-assignments.tsv?download=1"
+url2 = "https://zenodo.org/record/17215/files/rows-same-cluster-30-125-new.tsv.zip?download=1"
+location = "/Volumes/PU PU/My Own Code/FINAL_github/Mo3_Dendrogram/cluster-assignments.tsv"
+
+download.file(url1,location)
+download.file(url2,location)
+```
+
+
+S1:Loading data and reshaping data 
+```{r}
+data = fread('rows-same-cluster-30-125-new.tsv')
+casted_data = as.data.frame(dcast(data, V1 ~ V3, value.var = 'V5'))
+rownames(casted_data) = casted_data$V1
+casted_data$V1 = NULL
+
+#ITCC 
+itcc = as.data.frame(fread('cluster-assignments.tsv'))
+rownames(itcc) = itcc$label
+itcc$label = NULL 
+```
+S2: Computing correlation between each pair of rows 
+```{r, warning=F}
+correlation = cor(casted_data)
+
+#Distance matrix as input for protoclust 
+input = 1 - correlation
+```
+
+S3: Commencing with Agglomeration clustering (bottom-up linkage)
+```{r}
+clusters = protoclust(input, verb = F)
+
+# number of cluster k
+k = 25  
+
+# Print to cut tree to get k cluster 
+cut = protocut(clusters, k = k)
+n = nrow(input)
+h = clusters$height[n-k]
+```
+ 
+S4: Plotting the Hierarchical tree 
+```{r}
+#jpeg("cluster_dendrogram.jpeg")
+{plotwithprototypes(clusters, imerge =cut$imerge, col = 2, cex = .5, font = 0.2, main = "Hierarchical Tree")
+  abline(h=h, lty=, col ="red")}
+#dev.off()
+```
+S5: Plotting Dendrogram
+```{r}
+#jpeg("dendrogram.jpeg")
+
+par(mar=c(1,1,1,1))
+par(xpd = TRUE)
+{plot(as.phylo(clusters), "f", show.tip.label = F, no.margin = F, ,   x.lim = c(-1.3, 1.3), 
+      main = "Landscape of semantic relationships among 3514 drug-gene pairs")
+  
+  #count: appearing frequency in abstract Medline 
+  ring(itcc$count*0.1/max(itcc$count),as.phylo(clusters),offset = 0.1,  col = "turquoise" ) 
+  #in pgkp
+  ring(itcc$pgkb*0.03,  as.phylo(clusters),offset = 0.02,  col = "orange1" )  
+  #in drugbank 
+  ring(itcc$drugbank*0.03,  as.phylo(clusters),offset = 0.05,  col = "steelblue3" ) 
+  #in which cluster 
+  ring(cut$cl*0.05/cut$cl,  as.phylo(clusters), offset = 0.2, col = colors()[cut$cl+25])
+
+  legend(x = "topleft",legend = c("Frequency in Medline", "PharmGKB", "DrugBank"),  lty = 1, col = c("turquoise", "orange1", "steelblue3"), lwd = 1.5, cex = 0.8,  bty = "n") 
+
+
+}
+#dev.off()
+```
